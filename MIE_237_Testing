@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: 400;
+            color: #202124;
+        }
+        #quiz-container {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .question {
+            font-size: 24px;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        .answer {
+            flex-grow: 1;
+            font-size: 24px;
+            text-align: right;
+            border: none;
+            outline: none;
+            background: none;
+            padding: 5px;
+            font-weight: bold;
+        }
+        #result {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #34a853;
+        }
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #1558b0;
+        }
+        input[type="number"] {
+            font-size: 16px;
+            padding: 5px;
+            width: 50px;
+            text-align: center;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        select {
+            font-size: 16px;
+            padding: 5px;
+        }
+        #timer {
+            font-size: 18px;
+            color: #ea4335;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Math Quiz</h1>
+    <label>Number of Questions: <input type="number" id="numQuestions" value="5" min="1"></label>
+    <label>
+        Difficulty:
+        <select id="difficulty">
+            <option value="addition">Addition</option>
+            <option value="multiplication">Multiplication</option>
+        </select>
+    </label>
+    <label><input type="checkbox" id="showTimer"> Show Timer</label>
+    <button onclick="startQuiz()">Start Quiz</button>
+    
+    <div id="quiz-container"></div>
+    <p id="timer" style="display:none;"></p>
+    <button id="submit" style="display:none;" onclick="submitQuiz()">Submit Answers</button>
+    <p id="result"></p>
+    <button id="export" style="display:none;" onclick="exportCSV()">Export CSV</button>
+
+    <script>
+        let startTime;
+        let timerInterval;
+        let gameData = [];
+
+        function startQuiz() {
+            const numQuestions = document.getElementById('numQuestions').value;
+            const difficulty = document.getElementById('difficulty').value;
+            const showTimer = document.getElementById('showTimer').checked;
+            const quizContainer = document.getElementById('quiz-container');
+            quizContainer.innerHTML = '';
+            document.getElementById('result').innerText = '';
+            document.getElementById('export').style.display = 'none';
+            startTime = Date.now();
+            
+            if (showTimer) {
+                document.getElementById('timer').style.display = 'block';
+                timerInterval = setInterval(() => {
+                    let elapsed = Math.floor((Date.now() - startTime) / 1000);
+                    document.getElementById('timer').innerText = `Time: ${elapsed}s`;
+                }, 1000);
+            }
+            
+            for (let i = 0; i < numQuestions; i++) {
+                let num1 = Math.floor(Math.random() * 10) + 1;
+                let num2 = Math.floor(Math.random() * 10) + 1;
+                let operator = difficulty === 'addition' ? '+' : '×';
+                let questionHTML = `<div class='question'>
+                    ${num1} ${operator} ${num2} = <input type='number' class='answer' data-answer='${difficulty === 'addition' ? num1 + num2 : num1 * num2}'>
+                </div>`;
+                quizContainer.innerHTML += questionHTML;
+            }
+            document.getElementById('submit').style.display = 'block';
+            document.querySelector('.answer').focus();
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            let answers = document.querySelectorAll('.answer');
+            let correct = 0;
+            answers.forEach(input => {
+                if (parseInt(input.value) === parseInt(input.dataset.answer)) {
+                    correct++;
+                }
+            });
+            let totalTime = (Date.now() - startTime) / 1000;
+            let score = (correct / answers.length) * 100;
+            let showTimer = document.getElementById('showTimer').checked ? "Yes" : "No";
+            
+            gameData.push([totalTime.toFixed(2), score.toFixed(2), showTimer]);
+            document.getElementById('result').innerText = `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s`;
+            document.getElementById('export').style.display = 'block';
+        }
+
+        function exportCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Total Time (s),Accuracy (%),Timer Visible\n" + gameData.map(e => e.join(",")).join("\n");
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "math_quiz_results.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
