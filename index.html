@@ -6,6 +6,85 @@
     <title>Math Quiz</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let startTime = 0;
+        let timerInterval;
+
+        function startQuiz() {
+            const nickname = document.getElementById('nickname').value.trim();
+            if (!nickname) {
+                alert("Please enter your nickname.");
+                return;
+            }
+            const numQuestions = parseInt(document.getElementById('numQuestions').value);
+            const difficulty = document.getElementById('difficulty').value;
+            const showTimer = document.getElementById('showTimer').checked;
+            const quizContainer = document.getElementById('quiz-container');
+            quizContainer.innerHTML = '';
+            document.getElementById('result').innerText = '';
+            
+            startTime = Date.now();
+            
+            if (showTimer) {
+                document.getElementById('timer').style.display = 'block';
+                timerInterval = setInterval(() => {
+                    let elapsed = Math.floor((Date.now() - startTime) / 1000);
+                    document.getElementById('timer').innerText = `Time: ${elapsed}s`;
+                }, 1000);
+            }
+            
+            for (let i = 0; i < numQuestions; i++) {
+                let num1 = Math.floor(Math.random() * 10) + 1;
+                let num2 = Math.floor(Math.random() * 10) + 1;
+                let operator = difficulty === 'addition' ? '+' : '×';
+                let answer = difficulty === 'addition' ? num1 + num2 : num1 * num2;
+                
+                let questionHTML = `<div class='question'>
+                    ${num1} ${operator} ${num2} = <input type='number' class='answer' data-answer='${answer}'>
+                </div>`;
+                quizContainer.innerHTML += questionHTML;
+            }
+            document.getElementById('submit').style.display = 'block';
+            document.querySelector('.answer').focus();
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            let answers = document.querySelectorAll('.answer');
+            let correct = 0;
+            answers.forEach(input => {
+                if (parseInt(input.value) === parseInt(input.dataset.answer)) {
+                    correct++;
+                }
+            });
+            let totalTime = (Date.now() - startTime) / 1000;
+            let score = (correct / answers.length) * 100;
+            let showTimer = document.getElementById('showTimer').checked;
+            let nickname = document.getElementById('nickname').value.trim();
+
+            db.collection("quizResults").add({
+                nickname: nickname,
+                totalTime: totalTime.toFixed(2),
+                accuracy: score.toFixed(2),
+                timerVisible: showTimer,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            document.getElementById('result').innerText = `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s`;
+        }
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -100,105 +179,5 @@
     <p id="timer" style="display:none;"></p>
     <button id="submit" style="display:none;" onclick="submitQuiz()">Submit Answers</button>
     <p id="result"></p>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAWMJNnU86P2u7iWVXfTEGxyvFegIxovlI",
-            authDomain: "mie237-project-533cb.firebaseapp.com",
-            projectId: "mie237-project-533cb",
-            storageBucket: "mie237-project-533cb.firebasestorage.app",
-            messagingSenderId: "229190233795",
-            appId: "1:229190233795:web:40742fc623e9a20f233c76"
-        };
-        
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        let startTime;
-        let timerInterval;
-
-        function startQuiz() {
-    console.log("Start Quiz button clicked!"); // Debugging start
-    
-    const nickname = document.getElementById('nickname').value.trim();
-    if (!nickname) {
-        alert("Please enter your nickname.");
-        return;
-    }
-
-    const numQuestions = parseInt(document.getElementById('numQuestions').value);
-    const difficulty = document.getElementById('difficulty').value;
-    const showTimer = document.getElementById('showTimer').checked;
-    const quizContainer = document.getElementById('quiz-container');
-    
-    console.log("Nickname:", nickname);
-    console.log("Number of Questions:", numQuestions);
-    console.log("Difficulty:", difficulty);
-    console.log("Timer Visible:", showTimer);
-
-    // Clear previous quiz
-    quizContainer.innerHTML = '';
-    document.getElementById('result').innerText = '';
-
-    // Start Timer
-    startTime = Date.now();
-    if (showTimer) {
-        document.getElementById('timer').style.display = 'block';
-        timerInterval = setInterval(() => {
-            let elapsed = Math.floor((Date.now() - startTime) / 1000);
-            document.getElementById('timer').innerText = `Time: ${elapsed}s`;
-        }, 1000);
-    }
-
-    // ** Generate Quiz Questions **
-    for (let i = 0; i < numQuestions; i++) {
-        let num1 = Math.floor(Math.random() * 10) + 1;
-        let num2 = Math.floor(Math.random() * 10) + 1;
-        let operator = difficulty === 'addition' ? '+' : '×';
-        let answer = difficulty === 'addition' ? num1 + num2 : num1 * num2;
-
-        let questionHTML = `<div class='question'>
-            ${num1} ${operator} ${num2} = 
-            <input type='number' class='answer' data-answer='${answer}'>
-        </div>`;
-        
-        console.log("Generated Question:", num1, operator, num2, "=", answer); // Debug log
-        
-        quizContainer.innerHTML += questionHTML;
-    }
-
-    // Ensure submit button appears
-    document.getElementById('submit').style.display = 'block';
-    console.log("Quiz generated successfully!");
-}
-
-        function submitQuiz() {
-            clearInterval(timerInterval);
-            let answers = document.querySelectorAll('.answer');
-            let correct = 0;
-            answers.forEach(input => {
-                if (parseInt(input.value) === parseInt(input.dataset.answer)) {
-                    correct++;
-                }
-            });
-            let totalTime = (Date.now() - startTime) / 1000;
-            let score = (correct / answers.length) * 100;
-            let showTimer = document.getElementById('showTimer').checked;
-            let nickname = document.getElementById('nickname').value.trim();
-
-            const app = firebase.initializeApp(firebaseConfig);
-            const db = firebase.firestore();
-            
-            db.collection("quizResults").add({
-                nickname: nickname,
-                totalTime: totalTime.toFixed(2),
-                accuracy: score.toFixed(2),
-                timerVisible: showTimer,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            document.getElementById('result').innerText = `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s`;
-        }
-    </script>
 </body>
 </html>
