@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Math Quiz</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,7 +17,7 @@
             background-color: #f8f9fa;
         }
         h1 {
-            font-size: 64px;
+            font-size: 32px;
             font-weight: 400;
             color: #202124;
         }
@@ -61,10 +63,10 @@
         button:hover {
             background-color: #1558b0;
         }
-        input[type="number"] {
+        input[type="number"], input[type="text"] {
             font-size: 16px;
             padding: 5px;
-            width: 50px;
+            width: 100%;
             text-align: center;
             border-radius: 4px;
             border: 1px solid #ccc;
@@ -82,6 +84,7 @@
 </head>
 <body>
     <h1>Math Quiz</h1>
+    <label>Nickname: <input type="text" id="nickname" placeholder="Enter your nickname"></label>
     <label>Number of Questions: <input type="number" id="numQuestions" value="5" min="1"></label>
     <label>
         Difficulty:
@@ -97,21 +100,35 @@
     <p id="timer" style="display:none;"></p>
     <button id="submit" style="display:none;" onclick="submitQuiz()">Submit Answers</button>
     <p id="result"></p>
-    <button id="export" style="display:none;" onclick="exportCSV()">Export CSV</button>
 
     <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         let startTime;
         let timerInterval;
-        let gameData = [];
 
         function startQuiz() {
+            const nickname = document.getElementById('nickname').value.trim();
+            if (!nickname) {
+                alert("Please enter your nickname.");
+                return;
+            }
             const numQuestions = document.getElementById('numQuestions').value;
             const difficulty = document.getElementById('difficulty').value;
             const showTimer = document.getElementById('showTimer').checked;
             const quizContainer = document.getElementById('quiz-container');
             quizContainer.innerHTML = '';
             document.getElementById('result').innerText = '';
-            document.getElementById('export').style.display = 'none';
             startTime = Date.now();
             
             if (showTimer) {
@@ -146,22 +163,18 @@
             });
             let totalTime = (Date.now() - startTime) / 1000;
             let score = (correct / answers.length) * 100;
-            let showTimer = document.getElementById('showTimer').checked ? "Yes" : "No";
-            
-            gameData.push([totalTime.toFixed(2), score.toFixed(2), showTimer]);
-            document.getElementById('result').innerText = `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s`;
-            document.getElementById('export').style.display = 'block';
-        }
+            let showTimer = document.getElementById('showTimer').checked;
+            let nickname = document.getElementById('nickname').value.trim();
 
-        function exportCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Total Time (s),Accuracy (%),Timer Visible\n" + gameData.map(e => e.join(",")).join("\n");
-            let encodedUri = encodeURI(csvContent);
-            let link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "math_quiz_results.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            db.collection("quizResults").add({
+                nickname: nickname,
+                totalTime: totalTime.toFixed(2),
+                accuracy: score.toFixed(2),
+                timerVisible: showTimer,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            document.getElementById('result').innerText = `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s`;
         }
     </script>
 </body>
