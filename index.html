@@ -10,12 +10,16 @@
         const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_URL";
 
         function startQuiz() {
+            console.log("Start Quiz button clicked!");
             const nickname = document.getElementById('nickname').value.trim();
             if (!nickname) {
                 alert("Please enter your nickname.");
                 return;
             }
+
+            console.log("Nickname:", nickname);
             const numQuestions = parseInt(document.getElementById('numQuestions').value);
+            console.log("Number of Questions:", numQuestions);
             const difficulty = document.getElementById('difficulty').value;
             const showTimer = document.getElementById('showTimer').checked;
             const quizContainer = document.getElementById('quiz-container');
