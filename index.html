@@ -7,7 +7,7 @@
     <script>
         let startTime = 0;
         let timerInterval;
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyLqJwPuvhECJ9GFilUj3g_ljXxPgPVu-j9z5QrFYn57nW5cipDXC-q2cBLLpEw2Dzc8g/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDX1VR7vHSja26jP3zYh7tgWU5MoBznnzBdfqIZamFjVfMU3WMe6pyQ4D8UTZ0nQ_Vwg/exec";
 
         function startQuiz() {
     console.log("Start Quiz button clicked!");
@@ -73,11 +73,16 @@
         timerVisible: showTimer
     };
 
-    fetch("https://script.google.com/macros/s/AKfycbyNzA0wKXhl0sNh-3dhX55DS5V1vyNZ7zcdo6oeO_bXuqEi5QMfqghvNZGDxV2xD-yBpg/exec", {  // 替换成你的 Google Apps Script 部署的 URL
+    fetch("https://script.google.com/macros/s/AKfycbwDX1VR7vHSja26jP3zYh7tgWU5MoBznnzBdfqIZamFjVfMU3WMe6pyQ4D8UTZ0nQ_Vwg/exec", {  // 替换成你的 Google Apps Script 部署的 URL
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+        body: JSON.stringify({
+        nickname: "TestUser",
+        totalTime: 45.2,
+        accuracy: 90,
+        timerVisible: true
     })
+})
     .then(response => response.text())
     .then(result => {
         console.log("Data sent:", result);
