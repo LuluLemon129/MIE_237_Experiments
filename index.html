@@ -73,7 +73,7 @@
         timerVisible: showTimer
     };
 
-    fetch("YOUR_GOOGLE_SCRIPT_URL", {
+    fetch("https://script.google.com/macros/s/AKfycbyNzA0wKXhl0sNh-3dhX55DS5V1vyNZ7zcdo6oeO_bXuqEi5QMfqghvNZGDxV2xD-yBpg/exec", {  // 替换成你的 Google Apps Script 部署的 URL
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -86,6 +86,7 @@
     })
     .catch(error => console.error("Error:", error));
 }
+
     </script>
     <style>
         body {
