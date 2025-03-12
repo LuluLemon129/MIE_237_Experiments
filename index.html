@@ -4,23 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Math Quiz</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
     <script>
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-        
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
         let startTime = 0;
         let timerInterval;
+        const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_URL";
 
         function startQuiz() {
             const nickname = document.getElementById('nickname').value.trim();
@@ -74,15 +61,25 @@
             let showTimer = document.getElementById('showTimer').checked;
             let nickname = document.getElementById('nickname').value.trim();
 
-            db.collection("quizResults").add({
+            let data = {
                 nickname: nickname,
                 totalTime: totalTime.toFixed(2),
                 accuracy: score.toFixed(2),
-                timerVisible: showTimer,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
+                timerVisible: showTimer
+            };
 
-            document.getElementById('result').innerText = `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s`;
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(result => {
+                console.log("Data sent:", result);
+                document.getElementById('result').innerText = 
+                    `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s`;
+            })
+            .catch(error => console.error("Error:", error));
         }
     </script>
     <style>
