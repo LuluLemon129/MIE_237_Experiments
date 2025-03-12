@@ -10,46 +10,47 @@
         const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_URL";
 
         function startQuiz() {
-            console.log("Start Quiz button clicked!");
-            const nickname = document.getElementById('nickname').value.trim();
-            if (!nickname) {
-                alert("Please enter your nickname.");
-                return;
-            }
+    console.log("Start Quiz button clicked!");
 
-            console.log("Nickname:", nickname);
-            const numQuestions = parseInt(document.getElementById('numQuestions').value);
-            console.log("Number of Questions:", numQuestions);
-            const difficulty = document.getElementById('difficulty').value;
-            const showTimer = document.getElementById('showTimer').checked;
-            const quizContainer = document.getElementById('quiz-container');
-            quizContainer.innerHTML = '';
-            document.getElementById('result').innerText = '';
-            
-            startTime = Date.now();
-            
-            if (showTimer) {
-                document.getElementById('timer').style.display = 'block';
-                timerInterval = setInterval(() => {
-                    let elapsed = Math.floor((Date.now() - startTime) / 1000);
-                    document.getElementById('timer').innerText = `Time: ${elapsed}s`;
-                }, 1000);
-            }
-            
-            for (let i = 0; i < numQuestions; i++) {
-                let num1 = Math.floor(Math.random() * 10) + 1;
-                let num2 = Math.floor(Math.random() * 10) + 1;
-                let operator = difficulty === 'addition' ? '+' : '×';
-                let answer = difficulty === 'addition' ? num1 + num2 : num1 * num2;
-                
-                let questionHTML = `<div class='question'>
-                    ${num1} ${operator} ${num2} = <input type='number' class='answer' data-answer='${answer}'>
-                </div>`;
-                quizContainer.innerHTML += questionHTML;
-            }
-            document.getElementById('submit').style.display = 'block';
-            document.querySelector('.answer').focus();
-        }
+    const nickname = document.getElementById('nickname').value.trim();
+    if (!nickname) {
+        alert("Please enter your nickname.");
+        return;
+    }
+
+    const numQuestions = parseInt(document.getElementById('numQuestions').value);
+    const difficulty = document.getElementById('difficulty').value;
+    const showTimer = document.getElementById('showTimer').checked;
+    const quizContainer = document.getElementById('quiz-container');
+    
+    quizContainer.innerHTML = ''; 
+    document.getElementById('result').innerText = '';
+
+    startTime = Date.now(); // ✅ 现在 startTime 已正确初始化
+
+    if (showTimer) {
+        document.getElementById('timer').style.display = 'block';
+        timerInterval = setInterval(() => {
+            let elapsed = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('timer').innerText = `Time: ${elapsed}s`;
+        }, 1000);
+    }
+
+    for (let i = 0; i < numQuestions; i++) {
+        let num1 = Math.floor(Math.random() * 10) + 1;
+        let num2 = Math.floor(Math.random() * 10) + 1;
+        let operator = difficulty === 'addition' ? '+' : '×';
+        let answer = difficulty === 'addition' ? num1 + num2 : num1 * num2;
+
+        let questionHTML = `<div class='question'>
+            ${num1} ${operator} ${num2} = <input type='number' class='answer' data-answer='${answer}'>
+        </div>`;
+        quizContainer.innerHTML += questionHTML;
+    }
+
+    document.getElementById('submit').style.display = 'block';
+    document.querySelector('.answer').focus();
+}
 
         function submitQuiz() {
     clearInterval(timerInterval);
