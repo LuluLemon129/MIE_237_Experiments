@@ -7,7 +7,8 @@
     <script>
         let startTime = 0;
         let timerInterval;
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxP9s5CbYFAL-oj5J2R8tirh6iTVA0b3ILIiRZEeyhvtqJE7TZaf70SeaXv33TS4tJFMg/exec"; // 替换成你的 Google Apps Script 部署的 URL
+        const GITHUB_API_URL = "https://api.github.com/repos/LuluLemon129/MIE_237_Experiments/issues";
+        const GITHUB_TOKEN = "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";
 
         function startQuiz() {
             const nickname = document.getElementById('nickname').value.trim();
@@ -60,25 +61,27 @@
             let showTimer = document.getElementById('showTimer').checked;
             let nickname = document.getElementById('nickname').value.trim();
 
-            let data = {
-                nickname: nickname,
-                totalTime: totalTime.toFixed(2),
-                accuracy: score.toFixed(2),
-                timerVisible: showTimer
+            let issueData = {
+                title: `Quiz Result - ${nickname}`,
+                body: `**Nickname:** ${nickname}\n**Total Time:** ${totalTime.toFixed(2)}s\n**Accuracy:** ${score.toFixed(2)}%\n**Timer Visible:** ${showTimer}\n**Timestamp:** ${new Date().toISOString()}`
             };
 
-            fetch(GOOGLE_SCRIPT_URL, {
+            fetch(GITHUB_API_URL, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
+                headers: {
+                    "Authorization": `token ${GITHUB_TOKEN}`,
+                    "Accept": "application/vnd.github.v3+json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(issueData)
             })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(result => {
-                console.log("Data sent:", result);
+                console.log("GitHub Issue Created:", result);
                 document.getElementById('result').innerText = 
-                    `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s`;
+                    `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s\nResult saved to GitHub.`;
             })
-            .catch(error => console.error("Error:", error));
+            .catch(error => console.error("Error submitting to GitHub:", error));
         }
     </script>
     <style>
@@ -137,23 +140,6 @@
         }
         button:hover {
             background-color: #1558b0;
-        }
-        input[type="number"], input[type="text"] {
-            font-size: 16px;
-            padding: 5px;
-            width: 100%;
-            text-align: center;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-        select {
-            font-size: 16px;
-            padding: 5px;
-        }
-        #timer {
-            font-size: 18px;
-            color: #ea4335;
-            margin-top: 10px;
         }
     </style>
 </head>
