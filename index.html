@@ -20,8 +20,7 @@
             const showTimer = document.getElementById('showTimer').checked;
             const quizContainer = document.getElementById('quiz-container');
             quizContainer.innerHTML = '';
-            document.getElementById('result').innerText = '';
-            document.getElementById('copyResults').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'none';
             
             startTime = Date.now();
             
@@ -64,13 +63,20 @@
 
             quizResults = `${nickname}\t${totalTime.toFixed(2)}\t${score.toFixed(2)}%\t${difficulty}\t${showTimer}`;
 
-            document.getElementById('result').innerText = quizResults.replace(/\t/g, ' | ');
-            document.getElementById('copyResults').style.display = 'block';
+            document.getElementById('resultContent').innerHTML = `
+                <strong>Nickname:</strong> ${nickname} | 
+                <strong>Total Time:</strong> ${totalTime.toFixed(2)}s | 
+                <strong>Accuracy:</strong> ${score.toFixed(2)}% | 
+                <strong>Difficulty:</strong> ${difficulty} | 
+                <strong>Timer Visible:</strong> ${showTimer}
+            `;
+            document.getElementById('resultContainer').style.display = 'block';
         }
 
-        function copyResults() {
+        function copyAndRedirect() {
             navigator.clipboard.writeText(quizResults).then(() => {
-                alert("Results copied! Paste them into the Google Sheet.");
+                alert("Results copied! Redirecting to Google Sheets...");
+                window.open("https://docs.google.com/spreadsheets/d/1PDKhOf2KJYkUv9cfkQnPoElCr4Gzgs93n_54Kzi0CO8/edit?usp=sharing", "_blank");
             }).catch(err => {
                 console.error("Failed to copy: ", err);
             });
@@ -114,12 +120,14 @@
             padding: 5px;
             font-weight: bold;
         }
-        #result {
+        #resultContainer {
             font-size: 18px;
             font-weight: bold;
             margin-top: 20px;
             color: #34a853;
             white-space: pre-line;
+            display: none;
+            text-align: center;
         }
         button {
             background-color: #1a73e8;
@@ -133,10 +141,6 @@
         }
         button:hover {
             background-color: #1558b0;
-        }
-        #googleSheetLink {
-            margin-top: 20px;
-            font-size: 16px;
         }
     </style>
 </head>
@@ -157,8 +161,9 @@
     <div id="quiz-container"></div>
     <p id="timer" style="display:none;"></p>
     <button id="submit" style="display:none;" onclick="submitQuiz()">Submit Answers</button>
-    <p id="result"></p>
-    <button id="copyResults" style="display:none;" onclick="copyResults()">Copy Results</button>
-    <p id="googleSheetLink">Paste your results here: <a href="https://docs.google.com/spreadsheets/d/1PDKhOf2KJYkUv9cfkQnPoElCr4Gzgs93n_54Kzi0CO8/edit?usp=sharing" target="_blank">Google Sheets</a></p>
+    <div id="resultContainer">
+        <p id="resultContent"></p>
+        <button onclick="copyAndRedirect()">Copy & Go to Google Sheets</button>
+    </div>
 </body>
 </html>
