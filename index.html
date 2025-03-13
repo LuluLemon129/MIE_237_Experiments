@@ -7,7 +7,7 @@
     <script>
         let startTime = 0;
         let timerInterval;
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUhbvkdOafZAmbUqisDaYLJE_xH8EvmT5QvD6Y53g3GgcF78KhBhKQ9EeEonR9W1nN2g/exec"; // 替换成你的 Google Apps Script 部署的 URL
+        let quizResults = [];
 
         function startQuiz() {
             const nickname = document.getElementById('nickname').value.trim();
@@ -21,6 +21,7 @@
             const quizContainer = document.getElementById('quiz-container');
             quizContainer.innerHTML = '';
             document.getElementById('result').innerText = '';
+            document.getElementById('copyResults').style.display = 'none';
             
             startTime = Date.now();
             
@@ -61,28 +62,19 @@
             let nickname = document.getElementById('nickname').value.trim();
             let difficulty = document.getElementById('difficulty').value;
 
-            let data = {
-                nickname: nickname,
-                totalTime: totalTime.toFixed(2),
-                accuracy: score.toFixed(2),
-                difficulty: difficulty,
-                timerVisible: showTimer,
-                timestamp: new Date().toISOString()
-            };
+            let resultText = `Nickname: ${nickname}\nTotal Time: ${totalTime.toFixed(2)}s\nAccuracy: ${score.toFixed(2)}%\nDifficulty: ${difficulty}\nTimer Visible: ${showTimer}`;
+            quizResults = resultText;
 
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(result => {
-                console.log("数据已提交到 Google Sheets:", result);
-                document.getElementById('result').innerText = 
-                    `正确数: ${correct}/${answers.length}, 正确率: ${score.toFixed(2)}%, 用时: ${totalTime.toFixed(2)}s\n数据已存入 Google Sheets。`;
-            })
-            .catch(error => console.error("提交 Google Sheets 失败:
-", error));
+            document.getElementById('result').innerText = resultText;
+            document.getElementById('copyResults').style.display = 'block';
+        }
+
+        function copyResults() {
+            navigator.clipboard.writeText(quizResults).then(() => {
+                alert("Results copied! Paste them into the Google Sheet.");
+            }).catch(err => {
+                console.error("Failed to copy: ", err);
+            });
         }
     </script>
     <style>
@@ -128,6 +120,7 @@
             font-weight: bold;
             margin-top: 20px;
             color: #34a853;
+            white-space: pre-line;
         }
         button {
             background-color: #1a73e8;
@@ -141,6 +134,10 @@
         }
         button:hover {
             background-color: #1558b0;
+        }
+        #googleSheetLink {
+            margin-top: 20px;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -162,5 +159,7 @@
     <p id="timer" style="display:none;"></p>
     <button id="submit" style="display:none;" onclick="submitQuiz()">Submit Answers</button>
     <p id="result"></p>
+    <button id="copyResults" style="display:none;" onclick="copyResults()">Copy Results</button>
+    <p id="googleSheetLink">Paste your results here: <a href="https://docs.google.com/spreadsheets/d/1PDKhOf2KJYkUv9cfkQnPoElCr4Gzgs93n_54Kzi0CO8/edit?usp=sharing" target="_blank">Google Sheets</a></p>
 </body>
 </html>
