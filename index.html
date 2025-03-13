@@ -7,7 +7,7 @@
     <script>
         let startTime = 0;
         let timerInterval;
-        const GOOGLE_SCRIPT_URL = https://script.google.com/macros/s/AKfycbx-oiO7yVIp9Iv1DblaLtHPvPWypsJs9RjqD30xz9o8x8fImZM8YXjKpgRgrvj5-edNiQ/exec; // 替换成你的 Google Apps Script 部署的 URL
+        let quizResults = [];
 
         function startQuiz() {
             const nickname = document.getElementById('nickname').value.trim();
@@ -44,6 +44,7 @@
                 quizContainer.innerHTML += questionHTML;
             }
             document.getElementById('submit').style.display = 'block';
+            document.getElementById('downloadCSV').style.display = 'none';
         }
 
         function submitQuiz() {
@@ -60,25 +61,23 @@
             let showTimer = document.getElementById('showTimer').checked;
             let nickname = document.getElementById('nickname').value.trim();
 
-            let data = {
-                nickname: nickname,
-                totalTime: totalTime.toFixed(2),
-                accuracy: score.toFixed(2),
-                timerVisible: showTimer
-            };
+            quizResults.push({ nickname, totalTime: totalTime.toFixed(2), accuracy: score.toFixed(2), timerVisible: showTimer });
 
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(result => {
-                console.log("Data sent:", result);
-                document.getElementById('result').innerText = 
-                    `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s`;
-            })
-            .catch(error => console.error("Error:", error));
+            document.getElementById('result').innerText = `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s`;
+            document.getElementById('downloadCSV').style.display = 'block';
+        }
+
+        function downloadCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Nickname,Total Time (s),Accuracy (%),Timer Visible\n";
+            quizResults.forEach(row => {
+                csvContent += `${row.nickname},${row.totalTime},${row.accuracy},${row.timerVisible}\n`;
+            });
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "math_quiz_results.csv");
+            document.body.appendChild(link);
+            link.click();
         }
     </script>
     <style>
@@ -157,6 +156,7 @@
     <div id="quiz-container"></div>
     <p id="timer" style="display:none;"></p>
     <button id="submit" style="display:none;" onclick="submitQuiz()">Submit Answers</button>
+    <button id="downloadCSV" style="display:none;" onclick="downloadCSV()">Download CSV</button>
     <p id="result"></p>
 </body>
 </html>
