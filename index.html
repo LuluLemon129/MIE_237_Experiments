@@ -7,6 +7,7 @@
     <script>
         let startTime = 0;
         let timerInterval;
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxOveb_0Z4TnOaBx5DkHLIksTpQuhrOnqEyv0if6YgR5szWqlBvpIVQgvxF1F9ASS4kg/exec"; // 替换成你的 Google Apps Script 部署的 URL
 
         function startQuiz() {
             const nickname = document.getElementById('nickname').value.trim();
@@ -63,33 +64,21 @@
                 nickname: nickname,
                 totalTime: totalTime.toFixed(2),
                 accuracy: score.toFixed(2),
-                timerVisible: showTimer,
-                timestamp: new Date().toISOString()
+                timerVisible: showTimer
             };
 
-            fetch("https://api.github.com/gists", {
+            fetch(GOOGLE_SCRIPT_URL, {
                 method: "POST",
-                headers: {
-                    "Accept": "application/vnd.github.v3+json",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    description: "Math Quiz Results",
-                    public: true,
-                    files: {
-                        "quiz_results.json": {
-                            content: JSON.stringify(data, null, 2)
-                        }
-                    }
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
             })
             .then(response => response.json())
             .then(result => {
-                console.log("Data saved to GitHub Gist:", result);
+                console.log("Data sent:", result);
                 document.getElementById('result').innerText = 
-                    `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s\nResult saved to GitHub Gist: ${result.html_url}`;
+                    `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s`;
             })
-            .catch(error => console.error("Error submitting to GitHub Gist:", error));
+            .catch(error => console.error("Error:", error));
         }
     </script>
     <style>
