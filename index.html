@@ -7,7 +7,7 @@
     <script>
         let startTime = 0;
         let timerInterval;
-        let quizResults = [];
+        let quizResults = "";
 
         function startQuiz() {
             const nickname = document.getElementById('nickname').value.trim();
@@ -62,10 +62,9 @@
             let nickname = document.getElementById('nickname').value.trim();
             let difficulty = document.getElementById('difficulty').value;
 
-            let resultText = `Nickname: ${nickname}\nTotal Time: ${totalTime.toFixed(2)}s\nAccuracy: ${score.toFixed(2)}%\nDifficulty: ${difficulty}\nTimer Visible: ${showTimer}`;
-            quizResults = resultText;
+            quizResults = `${nickname}\t${totalTime.toFixed(2)}\t${score.toFixed(2)}%\t${difficulty}\t${showTimer}`;
 
-            document.getElementById('result').innerText = resultText;
+            document.getElementById('result').innerText = quizResults.replace(/\t/g, ' | ');
             document.getElementById('copyResults').style.display = 'block';
         }
 
