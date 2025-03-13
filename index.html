@@ -60,17 +60,18 @@
             let score = (correct / answers.length) * 100;
             let showTimer = document.getElementById('showTimer').checked;
             let nickname = document.getElementById('nickname').value.trim();
+            let difficulty = document.getElementById('difficulty').value;
 
-            quizResults.push({ nickname, totalTime: totalTime.toFixed(2), accuracy: score.toFixed(2), timerVisible: showTimer });
+            quizResults.push({ nickname, totalTime: totalTime.toFixed(2), accuracy: score.toFixed(2), difficulty, timerVisible: showTimer });
 
             document.getElementById('result').innerText = `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s`;
             document.getElementById('downloadCSV').style.display = 'block';
         }
 
         function downloadCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Nickname,Total Time (s),Accuracy (%),Timer Visible\n";
+            let csvContent = "data:text/csv;charset=utf-8,Nickname,Total Time (s),Accuracy (%),Difficulty,Timer Visible\n";
             quizResults.forEach(row => {
-                csvContent += `${row.nickname},${row.totalTime},${row.accuracy},${row.timerVisible}\n`;
+                csvContent += `${row.nickname},${row.totalTime},${row.accuracy},${row.difficulty},${row.timerVisible}\n`;
             });
             let encodedUri = encodeURI(csvContent);
             let link = document.createElement("a");
