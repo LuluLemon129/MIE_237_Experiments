@@ -7,7 +7,7 @@
     <script>
         let startTime = 0;
         let timerInterval;
-        const POWER_AUTOMATE_URL = "https://prod-28.canadacentral.logic.azure.com:443/workflows/52cdc8d181b345ac8d1d16151bad5be0/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lnCA6NUyyxEoAO1L0kisHjoN69hrBAJE2lkTvlbjQYA"; // 替换成你的 Power Automate URL
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUhbvkdOafZAmbUqisDaYLJE_xH8EvmT5QvD6Y53g3GgcF78KhBhKQ9EeEonR9W1nN2g/exec"; // 替换成你的 Google Apps Script 部署的 URL
 
         function startQuiz() {
             const nickname = document.getElementById('nickname').value.trim();
@@ -70,18 +70,19 @@
                 timestamp: new Date().toISOString()
             };
 
-            fetch(POWER_AUTOMATE_URL, {
+            fetch(GOOGLE_SCRIPT_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(result => {
-                console.log("数据已提交到 Office 365:", result);
+                console.log("数据已提交到 Google Sheets:", result);
                 document.getElementById('result').innerText = 
-                    `正确数: ${correct}/${answers.length}, 正确率: ${score.toFixed(2)}%, 用时: ${totalTime.toFixed(2)}s\n数据已存入 Office 365 Excel。`;
+                    `正确数: ${correct}/${answers.length}, 正确率: ${score.toFixed(2)}%, 用时: ${totalTime.toFixed(2)}s\n数据已存入 Google Sheets。`;
             })
-            .catch(error => console.error("提交 Office 365 失败:", error));
+            .catch(error => console.error("提交 Google Sheets 失败:
+", error));
         }
     </script>
     <style>
