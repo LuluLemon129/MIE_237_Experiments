@@ -110,7 +110,8 @@
             color: #202124;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
+            gap: 15px;
             margin: 10px 0;
         }
         .answer {
@@ -120,7 +121,9 @@
             border-bottom: 2px solid #000;
             background: none;
             padding: 5px;
-            width: 100%;
+            width: auto;
+            min-width: 50px;
+            max-width: 100px;
         }
         #resultContainer {
             font-size: 18px;
