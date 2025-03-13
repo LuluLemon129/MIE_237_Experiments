@@ -7,7 +7,7 @@
     <script>
         let startTime = 0;
         let timerInterval;
-        const GOOGLE_SCRIPT_URL = https://script.google.com/macros/s/AKfycbyxOveb_0Z4TnOaBx5DkHLIksTpQuhrOnqEyv0if6YgR5szWqlBvpIVQgvxF1F9ASS4kg/exec; // 替换成你的 Google Apps Script 部署的 URL
+        const GOOGLE_SCRIPT_URL = https://script.google.com/macros/s/AKfycbx-oiO7yVIp9Iv1DblaLtHPvPWypsJs9RjqD30xz9o8x8fImZM8YXjKpgRgrvj5-edNiQ/exec; // 替换成你的 Google Apps Script 部署的 URL
 
         function startQuiz() {
             const nickname = document.getElementById('nickname').value.trim();
@@ -67,11 +67,16 @@
                 timerVisible: showTimer
             };
 
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            })
+            fetch(https://script.google.com/macros/s/AKfycbx-oiO7yVIp9Iv1DblaLtHPvPWypsJs9RjqD30xz9o8x8fImZM8YXjKpgRgrvj5-edNiQ/exec, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        nickname: "TestUser",
+        totalTime: 45.2,
+        accuracy: 90,
+        timerVisible: true
+    })
+})
             .then(response => response.json())
             .then(result => {
                 console.log("Data sent:", result);
