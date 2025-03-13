@@ -7,7 +7,7 @@
     <script>
         let startTime = 0;
         let timerInterval;
-        let quizResults = [];
+        const POWER_AUTOMATE_URL = "https://prod-28.canadacentral.logic.azure.com:443/workflows/52cdc8d181b345ac8d1d16151bad5be0/triggers/manual/paths/invoke?api-version=2016-06-01"; // 替换成你的 Power Automate URL
 
         function startQuiz() {
             const nickname = document.getElementById('nickname').value.trim();
@@ -44,7 +44,6 @@
                 quizContainer.innerHTML += questionHTML;
             }
             document.getElementById('submit').style.display = 'block';
-            document.getElementById('downloadCSV').style.display = 'none';
         }
 
         function submitQuiz() {
@@ -62,23 +61,27 @@
             let nickname = document.getElementById('nickname').value.trim();
             let difficulty = document.getElementById('difficulty').value;
 
-            quizResults.push({ nickname, totalTime: totalTime.toFixed(2), accuracy: score.toFixed(2), difficulty, timerVisible: showTimer });
+            let data = {
+                nickname: nickname,
+                totalTime: totalTime.toFixed(2),
+                accuracy: score.toFixed(2),
+                difficulty: difficulty,
+                timerVisible: showTimer,
+                timestamp: new Date().toISOString()
+            };
 
-            document.getElementById('result').innerText = `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s`;
-            document.getElementById('downloadCSV').style.display = 'block';
-        }
-
-        function downloadCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Nickname,Total Time (s),Accuracy (%),Difficulty,Timer Visible\n";
-            quizResults.forEach(row => {
-                csvContent += `${row.nickname},${row.totalTime},${row.accuracy},${row.difficulty},${row.timerVisible}\n`;
-            });
-            let encodedUri = encodeURI(csvContent);
-            let link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "math_quiz_results.csv");
-            document.body.appendChild(link);
-            link.click();
+            fetch(POWER_AUTOMATE_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(result => {
+                console.log("数据已提交到 Office 365:", result);
+                document.getElementById('result').innerText = 
+                    `正确数: ${correct}/${answers.length}, 正确率: ${score.toFixed(2)}%, 用时: ${totalTime.toFixed(2)}s\n数据已存入 Office 365 Excel。`;
+            })
+            .catch(error => console.error("提交 Office 365 失败:", error));
         }
     </script>
     <style>
@@ -157,7 +160,6 @@
     <div id="quiz-container"></div>
     <p id="timer" style="display:none;"></p>
     <button id="submit" style="display:none;" onclick="submitQuiz()">Submit Answers</button>
-    <button id="downloadCSV" style="display:none;" onclick="downloadCSV()">Download CSV</button>
     <p id="result"></p>
 </body>
 </html>
