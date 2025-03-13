@@ -7,8 +7,6 @@
     <script>
         let startTime = 0;
         let timerInterval;
-        const GITHUB_API_URL = "https://api.github.com/repos/LuluLemon129/MIE_237_Experiments/issues";
-        const GITHUB_TOKEN = "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";
 
         function startQuiz() {
             const nickname = document.getElementById('nickname').value.trim();
@@ -61,27 +59,37 @@
             let showTimer = document.getElementById('showTimer').checked;
             let nickname = document.getElementById('nickname').value.trim();
 
-            let issueData = {
-                title: `Quiz Result - ${nickname}`,
-                body: `**Nickname:** ${nickname}\n**Total Time:** ${totalTime.toFixed(2)}s\n**Accuracy:** ${score.toFixed(2)}%\n**Timer Visible:** ${showTimer}\n**Timestamp:** ${new Date().toISOString()}`
+            let data = {
+                nickname: nickname,
+                totalTime: totalTime.toFixed(2),
+                accuracy: score.toFixed(2),
+                timerVisible: showTimer,
+                timestamp: new Date().toISOString()
             };
 
-            fetch(GITHUB_API_URL, {
+            fetch("https://api.github.com/gists", {
                 method: "POST",
                 headers: {
-                    "Authorization": `token ${GITHUB_TOKEN}`,
                     "Accept": "application/vnd.github.v3+json",
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(issueData)
+                body: JSON.stringify({
+                    description: "Math Quiz Results",
+                    public: true,
+                    files: {
+                        "quiz_results.json": {
+                            content: JSON.stringify(data, null, 2)
+                        }
+                    }
+                })
             })
             .then(response => response.json())
             .then(result => {
-                console.log("GitHub Issue Created:", result);
+                console.log("Data saved to GitHub Gist:", result);
                 document.getElementById('result').innerText = 
-                    `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s\nResult saved to GitHub.`;
+                    `Correct: ${correct}/${answers.length}, Accuracy: ${score.toFixed(2)}%, Time Taken: ${totalTime.toFixed(2)}s\nResult saved to GitHub Gist: ${result.html_url}`;
             })
-            .catch(error => console.error("Error submitting to GitHub:", error));
+            .catch(error => console.error("Error submitting to GitHub Gist:", error));
         }
     </script>
     <style>
