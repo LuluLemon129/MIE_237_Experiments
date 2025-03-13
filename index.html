@@ -39,7 +39,7 @@
                 let answer = difficulty === 'addition' ? num1 + num2 : num1 * num2;
                 
                 let questionHTML = `<div class='question'>
-                    <span>${num1} ${operator} ${num2} = </span>
+                    <span>${num1} ${operator} ${num2} =</span>
                     <input type='number' class='answer' data-answer='${answer}'>
                 </div>`;
                 quizContainer.innerHTML += questionHTML;
@@ -114,12 +114,11 @@
         .answer {
             flex-grow: 1;
             font-size: 24px;
-            text-align: right;
-            border: none;
-            outline: none;
-            background: none;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             padding: 5px;
-            font-weight: bold;
+            margin-left: 10px;
         }
         #resultContainer {
             font-size: 18px;
