@@ -117,11 +117,10 @@
             flex-grow: 1;
             font-size: 24px;
             text-align: center;
-            border: none;
-            border-bottom: 0.5px solid #000;
-            background: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             padding: 5px;
-            width: 100%;
+            margin-left: 10px;
         }
         #resultContainer {
             font-size: 18px;
@@ -149,11 +148,11 @@
 </head>
 <body>
     <h1>Math Quiz</h1>
-    <label>Nickname: <input type="text" id="nickname" placeholder="Enter your nickname" class="answer"></label>
-    <label>Number of Questions: <input type="number" id="numQuestions" value="5" min="1" class="answer"></label>
+    <label>Nickname: <input type="text" id="nickname" placeholder="Enter your nickname"></label>
+    <label>Number of Questions: <input type="number" id="numQuestions" value="5" min="1"></label>
     <label>
         Difficulty:
-        <select id="difficulty" class="answer">
+        <select id="difficulty">
             <option value="addition">Addition</option>
             <option value="multiplication">Multiplication</option>
         </select>
