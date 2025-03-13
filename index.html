@@ -39,7 +39,8 @@
                 let answer = difficulty === 'addition' ? num1 + num2 : num1 * num2;
                 
                 let questionHTML = `<div class='question'>
-                    ${num1} ${operator} ${num2} = <input type='number' class='answer' data-answer='${answer}'>
+                    <span>${num1} ${operator} ${num2} = </span>
+                    <input type='number' class='answer' data-answer='${answer}'>
                 </div>`;
                 quizContainer.innerHTML += questionHTML;
             }
