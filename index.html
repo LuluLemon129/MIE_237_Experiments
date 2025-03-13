@@ -67,16 +67,11 @@
                 timerVisible: showTimer
             };
 
-            fetch(https://script.google.com/macros/s/AKfycbx-oiO7yVIp9Iv1DblaLtHPvPWypsJs9RjqD30xz9o8x8fImZM8YXjKpgRgrvj5-edNiQ/exec, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-        nickname: "TestUser",
-        totalTime: 45.2,
-        accuracy: 90,
-        timerVisible: true
-    })
-})
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
             .then(response => response.json())
             .then(result => {
                 console.log("Data sent:", result);
