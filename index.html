@@ -93,9 +93,9 @@
 
         function copyAndPasteToGoogleSheet() {
             navigator.clipboard.writeText(quizResults).then(() => {
-                launchFireworks();
-                setTimeout(3600);
-                window.open("https://docs.google.com/spreadsheets/d/1PDKhOf2KJYkUv9cfkQnPoElCr4Gzgs93n_54Kzi0CO8/edit?usp=sharing", "_blank");
+                launchFireworks()
+                setTimeout(() => { window.open("https://docs.google.com/spreadsheets/d/1PDKhOf2KJYkUv9cfkQnPoElCr4Gzgs93n_54Kzi0CO8/edit?usp=sharing", "_blank"); }, 3000);
+                
             }).catch(err => {
                 console.error("Failed to copy: ", err);
             });
