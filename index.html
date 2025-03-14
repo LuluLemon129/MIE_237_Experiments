@@ -93,7 +93,6 @@
 
         function copyAndPasteToGoogleSheet() {
             navigator.clipboard.writeText(quizResults).then(() => {
-                alert("Results copied! Redirecting and pasting into Google Sheets...");
                 window.open("https://docs.google.com/spreadsheets/d/1PDKhOf2KJYkUv9cfkQnPoElCr4Gzgs93n_54Kzi0CO8/edit?usp=sharing", "_blank");
             }).catch(err => {
                 console.error("Failed to copy: ", err);
