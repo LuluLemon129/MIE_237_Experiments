@@ -87,7 +87,7 @@
                 <strong>Timer Visible:</strong> ${showTimer}
             `;
             document.getElementById('resultContainer').style.display = 'block';
-            
+            launchFireworks();
             copyAndPasteToGoogleSheet();
         }
 
@@ -99,6 +99,15 @@
                 console.error("Failed to copy: ", err);
             });
         }
+        function launchFireworks() {
+            let fireworks = document.createElement('div');
+            fireworks.classList.add('fireworks');
+            document.body.appendChild(fireworks);
+            setTimeout(() => {
+                fireworks.remove();
+            }, 3000);
+        }
+
     </script>
     <style>
         body {
@@ -133,6 +142,17 @@
             flex-shrink: 0;
             text-align: right;
             width: 150px;
+        }
+        .fireworks {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            background: url('https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif') no-repeat center;
+            background-size: cover;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
         }
         .answer {
             flex-grow: 1;
