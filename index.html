@@ -33,9 +33,17 @@
             }
             
             for (let i = 0; i < numQuestions; i++) {
-                let num1 = Math.floor(Math.random() * 10) + 1;
-                let num2 = Math.floor(Math.random() * 10) + 1;
+                let num1, num2;
                 let operator = difficulty === 'addition' ? '+' : '×';
+                
+                if (difficulty === 'addition') {
+                    num1 = Math.floor(Math.random() * 90) + 10; // Two-digit number
+                    num2 = Math.floor(Math.random() * 90) + 10; // Two-digit number
+                } else {
+                    num1 = Math.floor(Math.random() * 9) + 1; // Single-digit number
+                    num2 = Math.floor(Math.random() * 9) + 1; // Single-digit number
+                }
+                
                 let answer = difficulty === 'addition' ? num1 + num2 : num1 * num2;
                 
                 let questionHTML = `<div class='question'>
