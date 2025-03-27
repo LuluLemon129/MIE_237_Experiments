@@ -38,8 +38,8 @@
                 let num1, num2, answer, operator;
                 do {
                     if (difficulty === 'addition') {
-                        num1 = Math.floor(Math.random() * 90) + 10; // Two-digit number
-                        num2 = Math.floor(Math.random() * 90) + 10; // Two-digit number
+                        num1 = Math.floor(Math.random() * 9) + 10; // Single-digit number
+                        num2 = Math.floor(Math.random() * 9) + 10; // Single-digit number
                         answer = num1 + num2;
                         operator = '+';
                     } else {
@@ -279,7 +279,7 @@
     <button onclick="startQuiz()">Start Quiz</button>
     
     <div id="quiz-container"></div>
-    <p id="timer" style="display:none;"></p>
+    <p id="timer" style="display:none; font-size: 48px;"></p>
     <button id="submit" style="display:none;" onclick="submitQuiz()">Submit</button>
     <p style="font-size:x-small;">
         <br><br>Upon clicking on the <span style="font-weight: bold;">submit</span> button, it will automatically:<br>
